@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -86,14 +86,14 @@
     async function register() {
         const gender = document.querySelector('input[name="gender"]:checked')?.value || '';
         const data = { fullname: document.getElementById('r-name').value, email: document.getElementById('r-email').value, phone: document.getElementById('r-phone').value, password: document.getElementById('r-password').value, dob: document.getElementById('r-dob').value, gender, address: document.getElementById('r-address').value, country: document.getElementById('r-country').value, city: document.getElementById('r-city').value };
-        const res = await fetch('http://localhost:3000/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const res = await fetch('https://daily-drift-f1db.onrender.com/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
         const result = await res.json();
         if (result.success) { showMessage('r-message', result.message, 'success'); setTimeout(() => window.open('thankyou.html', '_blank'), 1000); }
         else { showMessage('r-message', result.message, 'error'); }
     }
     async function login() {
         const data = { emailOrPhone: document.getElementById('l-emailOrPhone').value, password: document.getElementById('l-password').value };
-        const res = await fetch('http://localhost:3000/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const res = await fetch('https://daily-drift-f1db.onrender.com/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
         const result = await res.json();
         if (result.success) { showMessage('l-message', 'Welcome back, ' + result.name + '!', 'success'); setTimeout(() => window.open('thankyou.html', '_blank'), 1000); }
         else { showMessage('l-message', result.message, 'error'); }
