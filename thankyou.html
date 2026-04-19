@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brew & Bites Cafe</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #FFF8F2;
+            color: #333;
+        }
+
+        header {
+            background: #EE4E34;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 { font-size: 1.6rem; }
+        header p { font-size: 0.85rem; opacity: 0.85; }
+
+        .cart-icon {
+            background: white;
+            color: #EE4E34;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .main {
+            display: flex;
+            gap: 24px;
+            padding: 30px 40px;
+        }
+
+        .menu { flex: 2; }
+        .cart-panel {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .menu h2 {
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+            color: #EE4E34;
+        }
+
+        .category-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 20px 0 10px;
+            border-left: 4px solid #EE4E34;
+            padding-left: 10px;
+            color: #333;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .item-emoji { font-size: 2rem; }
+        .item-name { font-weight: bold; font-size: 0.95rem; }
+        .item-desc { font-size: 0.78rem; color: #888; }
+        .item-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .item-price { font-weight: bold; color: #EE4E34; }
+
+        .add-btn {
+            background: #EE4E34;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 14px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover { background: #cc3e28; }
+
+        .cart-panel h2 {
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            color: #EE4E34;
+            border-bottom: 1px solid #f0e0da;
+            padding-bottom: 10px;
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: #aaa;
+            padding: 30px 0;
+            font-size: 0.9rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5ede8;
+            font-size: 0.9rem;
+        }
+
+        .cart-item-name { flex: 1; }
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qty-btn {
+            background: #f5ede8;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            color: #EE4E34;
+            font-weight: bold;
+        }
+
+        .qty-btn:hover { background: #f0d5cc; }
+
+        .cart-item-price {
+            min-width: 55px;
+            text-align: right;
+            font-weight: bold;
+            color: #EE4E34;
+        }
+
+        .cart-total {
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 2px solid #EE4E34;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .purchase-btn {
+            margin-top: 14px;
+            width: 100%;
+            padding: 12px;
+            background: #EE4E34;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .purchase-btn:hover { background: #cc3e28; }
+        .purchase-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .overlay.show { display: flex; }
+
+        .popup {
+            background: white;
+            border-radius: 14px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .popup .tick { font-size: 3rem; margin-bottom: 10px; }
+        .popup h2 { color: #EE4E34; margin-bottom: 8px; }
+        .popup p { color: #666; font-size: 0.95rem; margin-bottom: 20px; }
+
+        .popup-close {
+            background: #EE4E34;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>Brew &amp; Bites Cafe</h1>
+        <p>Fresh | Cozy | Delicious</p>
+    </div>
+    <div class="cart-icon" id="cart-summary">🛒 Cart: 0 items</div>
+</header>
+
+<div class="main">
+
+    <div class="menu">
+        <h2>Our Menu</h2>
+        <p style="color:#888; font-size:0.9rem;">Click "Add" to place items in your cart</p>
+
+        <div class="category-title">☕ Hot Drinks</div>
+        <div class="items-grid" id="hot-drinks"></div>
+
+        <div class="category-title">🧋 Cold Drinks</div>
+        <div class="items-grid" id="cold-drinks"></div>
+
+        <div class="category-title">🍰 Snacks & Bites</div>
+        <div class="items-grid" id="snacks"></div>
+
+        <div class="category-title">🍕 Pizzas</div>
+        <div class="items-grid" id="pizzas"></div>
+    </div>
+
+    <div class="cart-panel">
+        <h2>🛒 Your Cart</h2>
+        <div id="cart-items"><div class="cart-empty">Your cart is empty</div></div>
+        <div class="cart-total" id="cart-total" style="display:none;">
+            <span>Total</span>
+            <span id="total-amount">₹0</span>
+        </div>
+        <button class="purchase-btn" id="purchase-btn" disabled onclick="purchase()">Purchase</button>
+    </div>
+</div>
+
+<div class="overlay" id="overlay">
+    <div class="popup">
+        <div class="tick">✅</div>
+        <h2>Thank you for shopping with us!</h2>
+        <p>Your order has been placed successfully. We'll have it ready for you shortly. Enjoy!</p>
+        <button class="popup-close" onclick="closePopup()">Close</button>
+    </div>
+</div>
+
+<script>
+    const menuData = {
+        "hot-drinks": [
+            { name: "Espresso", emoji: "☕", price: 180, desc: "Strong & bold shot" },
+            { name: "Cappuccino", emoji: "☕", price: 230, desc: "Frothy milk & espresso" },
+            { name: "Latte", emoji: "🥛", price: 250, desc: "Smooth & creamy" },
+            { name: "Masala Chai", emoji: "🍵", price: 110, desc: "Spiced Indian tea" },
+            { name: "Hot Chocolate", emoji: "🍫", price: 260, desc: "Rich cocoa blend" },
+            { name: "Green Tea", emoji: "🍵", price: 100, desc: "Light & refreshing" },
+        ],
+        "cold-drinks": [
+            { name: "Cold Coffee", emoji: "🧋", price: 290, desc: "Chilled & creamy" },
+            { name: "Iced Latte", emoji: "🧊", price: 300, desc: "Cold brew with milk" },
+            { name: "Mango Smoothie", emoji: "🥭", price: 290, desc: "Fresh mango blend" },
+            { name: "Lemonade", emoji: "🍋", price: 170, desc: "Tangy & refreshing" },
+            { name: "Oreo Shake", emoji: "🍦", price: 390, desc: "Crushed oreo milkshake" },
+        ],
+        "snacks": [
+            { name: "Croissant", emoji: "🥐", price: 210, desc: "Buttery & flaky" },
+            { name: "Chocolate Cake", emoji: "🍰", price: 270, desc: "Slice of rich cake" },
+            { name: "Veg Sandwich", emoji: "🥪", price: 220, desc: "Grilled & crispy" },
+            { name: "Muffin", emoji: "🧁", price: 200, desc: "Blueberry or choco" },
+            { name: "French Fries", emoji: "🍟", price: 190, desc: "Crispy golden fries" },
+            { name: "Bruschetta", emoji: "🍞", price: 210, desc: "Toasted with toppings" },
+        ],
+        "pizzas": [
+            { name: "Margherita Pizza", emoji: "🍕", price: 550, desc: "Classic tomato & cheese" },
+            { name: "Jalapeno Pizza", emoji: "🍕", price: 580, desc: "Spicy jalapeno kick" },
+            { name: "Farmers Market Pizza", emoji: "🍕", price: 599, desc: "Fresh veggie toppings" },
+            { name: "Pizza Volcano", emoji: "🍕", price: 830, desc: "Extra cheesy & loaded" },
+            { name: "Greek Pizza", emoji: "🍕", price: 975, desc: "Olives, feta & herbs" },
+            { name: "Detroit Pizza", emoji: "🍕", price: 1150, desc: "Thick crispy crust" },
+        ]
+    };
+
+    let cart = {};
+
+    function buildMenu() {
+        for (const [category, items] of Object.entries(menuData)) {
+            const container = document.getElementById(category);
+            items.forEach(item => {
+                container.innerHTML += `
+                    <div class="item-card">
+                        <div class="item-emoji">${item.emoji}</div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-desc">${item.desc}</div>
+                        <div class="item-bottom">
+                            <span class="item-price">₹${item.price}</span>
+                            <button class="add-btn" onclick="addToCart('${item.name}', ${item.price})">+ Add</button>
+                        </div>
+                    </div>`;
+            });
+        }
+    }
+
+    function addToCart(name, price) {
+        if (cart[name]) {
+            cart[name].qty++;
+        } else {
+            cart[name] = { price, qty: 1 };
+        }
+        renderCart();
+    }
+
+    function changeQty(name, delta) {
+        if (!cart[name]) return;
+        cart[name].qty += delta;
+        if (cart[name].qty <= 0) delete cart[name];
+        renderCart();
+    }
+
+    function renderCart() {
+        const container = document.getElementById('cart-items');
+        const totalEl = document.getElementById('cart-total');
+        const totalAmt = document.getElementById('total-amount');
+        const purchaseBtn = document.getElementById('purchase-btn');
+        const cartSummary = document.getElementById('cart-summary');
+
+        const keys = Object.keys(cart);
+
+        if (keys.length === 0) {
+            container.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+            totalEl.style.display = 'none';
+            purchaseBtn.disabled = true;
+            cartSummary.textContent = '🛒 Cart: 0 items';
+            return;
+        }
+
+        let html = '';
+        let total = 0;
+        let totalItems = 0;
+
+        keys.forEach(name => {
+            const { price, qty } = cart[name];
+            const subtotal = price * qty;
+            total += subtotal;
+            totalItems += qty;
+            html += `
+                <div class="cart-item">
+                    <div class="cart-item-name">${name}</div>
+                    <div class="cart-item-qty">
+                        <button class="qty-btn" onclick="changeQty('${name}', -1)">-</button>
+                        <span>${qty}</span>
+                        <button class="qty-btn" onclick="changeQty('${name}', 1)">+</button>
+                    </div>
+                    <div class="cart-item-price">₹${subtotal}</div>
+                </div>`;
+        });
+
+        container.innerHTML = html;
+        totalEl.style.display = 'flex';
+        totalAmt.textContent = '₹' + total;
+        purchaseBtn.disabled = false;
+        cartSummary.textContent = `🛒 Cart: ${totalItems} item${totalItems > 1 ? 's' : ''}`;
+    }
+
+    function purchase() {
+        document.getElementById('overlay').classList.add('show');
+        cart = {};
+        renderCart();
+    }
+
+    function closePopup() {
+        document.getElementById('overlay').classList.remove('show');
+    }
+
+    buildMenu();
+</script>
+</body>
+</html>

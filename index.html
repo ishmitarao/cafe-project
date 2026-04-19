@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brew & Bites - Register / Login</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #FFF8F2; font-family: Arial, sans-serif; }
+        .container { background: #FCEDDA; padding: 25px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #EE4E34; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: 600; color: #888; border-radius: 6px 6px 0 0; }
+        .tab.active { background: #EE4E34; color: white; }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+        header { font-size: 1.2rem; font-weight: 600; text-align: center; margin-bottom: 15px; color: #EE4E34; }
+        .input-box { margin-top: 10px; }
+        .input-box label { color: #000; font-size: 0.9rem; }
+        .input-box input, .select-box select { height: 35px; width: 100%; outline: none; font-size: 1rem; color: #808080; margin-top: 5px; border: 1px solid #EE4E34; border-radius: 6px; padding: 0 15px; background: #FCEDDA; box-sizing: border-box; }
+        .column { display: flex; column-gap: 15px; }
+        .column .input-box { flex: 1; }
+        .gender-box { margin-top: 10px; }
+        .gender-option { display: flex; align-items: center; column-gap: 20px; flex-wrap: wrap; margin-top: 5px; }
+        .gender { display: flex; align-items: center; gap: 5px; }
+        .gender input { accent-color: #EE4E34; width: auto; }
+        button[type="submit"] { height: 40px; width: 100%; color: #fff; font-size: 1rem; font-weight: 600; margin-top: 15px; border: none; border-radius: 6px; cursor: pointer; background: #EE4E34; transition: all 0.2s ease; }
+        button[type="submit"]:hover { background: #cc3e28; }
+        .message { margin-top: 12px; text-align: center; font-size: 0.9rem; padding: 8px; border-radius: 6px; display: none; }
+        .message.success { background: #d4edda; color: #155724; display: block; }
+        .message.error { background: #f8d7da; color: #721c24; display: block; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('register', event)">Register</div>
+        <div class="tab" onclick="switchTab('login', event)">Login</div>
+    </div>
+    <div class="form-section active" id="register-section">
+        <header>Create Account</header>
+        <div class="input-box"><label>Full Name</label><input id="r-name" type="text" placeholder="Enter full name"></div>
+        <div class="column">
+            <div class="input-box"><label>Email</label><input id="r-email" type="email" placeholder="Enter email"></div>
+            <div class="input-box"><label>Phone Number</label><input id="r-phone" type="text" placeholder="Enter phone"></div>
+        </div>
+        <div class="column">
+            <div class="input-box"><label>Password</label><input id="r-password" type="password" placeholder="Create password"></div>
+            <div class="input-box"><label>Birth Date</label><input id="r-dob" type="date"></div>
+        </div>
+        <div class="gender-box">
+            <label>Gender</label>
+            <div class="gender-option">
+                <div class="gender"><input type="radio" name="gender" id="male" value="Male" checked><label for="male">Male</label></div>
+                <div class="gender"><input type="radio" name="gender" id="female" value="Female"><label for="female">Female</label></div>
+                <div class="gender"><input type="radio" name="gender" id="other" value="Prefer not to say"><label for="other">Prefer not to say</label></div>
+            </div>
+        </div>
+        <div class="input-box"><label>Street Address</label><input id="r-address" type="text" placeholder="Enter street address"></div>
+        <div class="column">
+            <div class="input-box"><label>Country</label>
+                <select id="r-country"><option value="">Country</option><option>USA</option><option>Germany</option><option>Japan</option><option>India</option><option>Italy</option><option>France</option><option>Spain</option><option>Britain</option><option>Netherlands</option></select>
+            </div>
+            <div class="input-box"><label>City</label><input id="r-city" type="text" placeholder="Enter city"></div>
+        </div>
+        <button type="submit" onclick="register()">Register</button>
+        <div class="message" id="r-message"></div>
+    </div>
+    <div class="form-section" id="login-section">
+        <header>Welcome Back</header>
+        <div class="input-box"><label>Email or Phone Number</label><input id="l-emailOrPhone" type="text" placeholder="Enter email or phone"></div>
+        <div class="input-box"><label>Password</label><input id="l-password" type="password" placeholder="Enter password"></div>
+        <button type="submit" onclick="login()">Login</button>
+        <div class="message" id="l-message"></div>
+    </div>
+</div>
+<script>
+    function switchTab(tab, event) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(tab + '-section').classList.add('active');
+        event.target.classList.add('active');
+    }
+    function showMessage(id, text, type) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.className = 'message ' + type;
+    }
+    async function register() {
+        const gender = document.querySelector('input[name="gender"]:checked')?.value || '';
+        const data = { fullname: document.getElementById('r-name').value, email: document.getElementById('r-email').value, phone: document.getElementById('r-phone').value, password: document.getElementById('r-password').value, dob: document.getElementById('r-dob').value, gender, address: document.getElementById('r-address').value, country: document.getElementById('r-country').value, city: document.getElementById('r-city').value };
+        const res = await fetch('http://localhost:3000/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (result.success) { showMessage('r-message', result.message, 'success'); setTimeout(() => window.open('thankyou.html', '_blank'), 1000); }
+        else { showMessage('r-message', result.message, 'error'); }
+    }
+    async function login() {
+        const data = { emailOrPhone: document.getElementById('l-emailOrPhone').value, password: document.getElementById('l-password').value };
+        const res = await fetch('http://localhost:3000/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (result.success) { showMessage('l-message', 'Welcome back, ' + result.name + '!', 'success'); setTimeout(() => window.open('thankyou.html', '_blank'), 1000); }
+        else { showMessage('l-message', result.message, 'error'); }
+    }
+</script>
+</body>
+</html>
